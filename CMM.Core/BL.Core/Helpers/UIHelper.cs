@@ -1,7 +1,9 @@
 ﻿using CMM.Core.BL.Core.Common;
+using CMM.Core.BL.Core.Common.Menu;
 using CMM.Core.BL.Core.Models.Settings;
 using EnumsNET;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace CMM.Core.BL.Core.Helpers
 {
@@ -69,7 +71,7 @@ namespace CMM.Core.BL.Core.Helpers
         /// <summary>
         /// Сформировать описание основных опций программы (главное меню) на основании настроек пользователя
         /// </summary>
-        /// <param name="settings"></param>
+        /// <param name="settings">Текущие настройки пользователя (использует свойство Language)</param>
         /// <returns></returns>
         public static string GetMainMenuStringBySettings(
             UserSettingsModel settings)
@@ -100,11 +102,72 @@ namespace CMM.Core.BL.Core.Helpers
                 .GetField("MainMenuOptionQuit")
                 .GetRawConstantValue());
 
-            result.Add((string)uIConstantType
-                .GetField("MainMenuInputPrefix")
-                .GetRawConstantValue());
-
             return string.Join("\n", result);
+        }
+
+        /// <summary>
+        /// Сформировать представление префикса ввода данных на основании настроек пользователя
+        /// </summary>
+        /// <param name="settings">Текущие настройки пользователя (использует свойство Language)</param>
+        /// <returns></returns>
+        public static string GetMainMenuInputPrefixBySettings(UserSettingsModel settings)
+        {
+            Type uIConstantType = GetTypeByNameAndSettings(
+                "UIConstants",
+                settings);
+
+            return (string)uIConstantType
+                .GetField("MainMenuInputPrefix")
+                .GetRawConstantValue();
+        }
+
+        /// <summary>
+        /// Сформировать текст сообщения при выборе пункта меню на основании настроек пользователя
+        /// </summary>
+        /// <param name="option">Выбранный пункт меню</param>
+        /// <param name="settings">Настройки пользователя</param>
+        /// <returns></returns>
+        public static string GetMainMenuOptionTitleBySettings(
+            MainMenuOptions option,
+            UserSettingsModel settings)
+        {
+            var mainMenuOptionDescription = option.AsString(EnumFormat.Description);
+
+            Type mainMenuOptionDescriptionsType = GetTypeByNameAndSettings(
+                "MainMenuOptionDescriptions",
+                settings);
+
+            return (string)mainMenuOptionDescriptionsType
+                .GetField(mainMenuOptionDescription)
+                .GetRawConstantValue();
+        }
+
+        /// <summary>
+        /// Отпределить опцию меню по введенной пользователем строке
+        /// </summary>
+        /// <param name="input">Данные, введенные пользователем</param>
+        /// <param name="option">Опция меню</param>
+        /// <returns></returns>
+        public static bool TryGetMenuOptionFromString(
+            string input, 
+            out MainMenuOptions option)
+        {
+            option = default(MainMenuOptions);
+
+            string normalizedInput = input.Replace(" ", "");
+
+            if(!ValidateMainMenuInput(normalizedInput))
+                return false;
+
+            if(MainMenuOptions.TryParse(
+                normalizedInput, 
+                out option))
+            {
+                if (option.IsValid())
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -143,5 +206,16 @@ namespace CMM.Core.BL.Core.Helpers
                     AppInfo.BuildDate.ToString("dd.MM.yyyy"));
         }
 
+        /// <summary>
+        /// Проверить введенное пользователем значение на соответствие ожидаемому типу данных
+        /// </summary>
+        /// <param name="input">Нормализованная строка пользовательского ввода</param>
+        /// <returns></returns>
+        private static bool ValidateMainMenuInput(string input)
+        {
+            Regex digitsOnly = new Regex(@"[\d]");
+
+            return digitsOnly.IsMatch(input);
+        }
     }
 }

@@ -10,12 +10,12 @@
         public const string CMMVersion = "Версия %HighVersion%.%LowVersion% Опубликована: %BuildDate%";
         public const string Copyright = "MIT лицензия Стефанов Антон (SquiCat)";
 
-        public const string MainMenuInputPrefix = "->";
-
         public const string MainMenuHeader = "Выберете пункт меню, введя соответствующее число:";
         public const string MainMenuOptionCompress = "(1) Указать файл для сжатия";
         public const string MainMenuOptionDecompress = "(2) Указать файл для распаковки";
         public const string MainMenuOptionChangeSettings = "(3) Изменить настройки программы";
         public const string MainMenuOptionQuit = "(4) Выйти из программы";
+
+        public const string MainMenuInputPrefix = "->";
     }
 }

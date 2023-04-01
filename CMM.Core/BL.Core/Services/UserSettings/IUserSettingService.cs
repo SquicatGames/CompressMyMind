@@ -15,6 +15,11 @@ namespace CMM.Core.BL.Core.Services.UserSettings
         void LoadSettingsFromFile(string path = DefaultSettings.DFSettingsPath);
 
         /// <summary>
+        /// Сохранить настройки пользователя в файл
+        /// </summary>
+        void SaveSettingsToFile();
+
+        /// <summary>
         /// Получить текущие настройки пользователя
         /// </summary>
         /// <returns>Возвращает активные на момент запуска программы настройки</returns>

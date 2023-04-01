@@ -1,4 +1,6 @@
-﻿using CMM.Core.BL.Core.Helpers;
+﻿using CMM.Core.BL.Core.Common.Menu;
+using CMM.Core.BL.Core.Helpers;
+using CMM.Core.BL.Core.Services.MainMenu;
 using CMM.Core.BL.Core.Services.UserSettings;
 
 namespace CMM.Core
@@ -35,10 +37,30 @@ namespace CMM.Core
             }
 
             var mainMenuData = UIHelper.GetMainMenuStringBySettings(currentSettings);
+            var mainMenuInputPrefix = UIHelper.GetMainMenuInputPrefixBySettings(currentSettings);
 
             //Отображение главного меню программы
-            Console.Write(mainMenuData);
-            Console.ReadLine();
+            Console.WriteLine(mainMenuData);
+
+            bool anyMainMenuOptionSelected = false;
+            MainMenuOptions selectedOption = default(MainMenuOptions);
+
+            while(!anyMainMenuOptionSelected)
+            {
+                Console.Write(mainMenuInputPrefix);
+                if(UIHelper.TryGetMenuOptionFromString(
+                    Console.ReadLine(),
+                    out MainMenuOptions option))
+                {
+                    anyMainMenuOptionSelected = true;
+                    selectedOption = option;
+                }
+            }
+
+            MainMenuService mainMenuService = new(userSettingService);
+
+            //Выполнить действия в соответствие с выбором пользователя
+            mainMenuService.ProcessMainMenuOptionAsync(selectedOption);
         }
     }
 }

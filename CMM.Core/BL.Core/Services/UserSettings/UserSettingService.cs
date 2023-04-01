@@ -48,6 +48,20 @@ namespace CMM.Core.BL.Core.Services.UserSettings
             }
         }
 
+        public void SaveSettingsToFile()
+        {
+            var path = DefaultSettings.DFSettingsPath;
+
+            try
+            {
+                File.WriteAllText(path, JsonSerializer.Serialize( _settings));
+            }
+            finally
+            {
+                ;//nop
+            }
+        }
+
         public UserSettingsModel GetCurrentSettings()
         {
             if(_settings == default)
