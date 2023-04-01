@@ -72,24 +72,9 @@ namespace CMM.Core.BL.Core.Services.UserSettings
             if(!_isSettingFileFound
                 || !_isSettingFileParsed)
             {
-                Type warningCodeDescriptionType = Assembly
-                .GetExecutingAssembly()
-                .GetTypes()
-                .First(
-                    t => t.Name ==
-                    $"WarningCodeDescriptions{LocalizationHelper.MapLanguageToAssemblySuffix(_settings.Language)}"
-                );
-
-                if (warningCodeDescriptionType.Name is "WarningCodeDescriptionsEN")
-                {
-                    return WarningCodeDescriptionsEN.CannotLoadUserSettingsDescription;
-                }
-                else if (warningCodeDescriptionType.Name is "WarningCodeDescriptionsRU")
-                {
-                    return WarningCodeDescriptionsRU.CannotLoadUserSettingsDescription;
-                }
-
-                return "no file lol";
+                return UIHelper.GetWarningStringByCodeAndSettings(
+                    Common.WarningCodes.CannotLoadUserSettings,
+                    _settings);
             }
 
             return null;

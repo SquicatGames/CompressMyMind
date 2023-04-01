@@ -11,4 +11,8 @@
     <Folder Include="DA.Core\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Enums.NET" Version="4.0.1" />
+  </ItemGroup>
+
 </Project>

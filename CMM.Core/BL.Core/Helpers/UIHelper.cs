@@ -1,7 +1,9 @@
-﻿using CMM.Core.BL.Core.Common.Localization;
+﻿using CMM.Core.BL.Core.Common;
+using CMM.Core.BL.Core.Common.Localization;
 using CMM.Core.BL.Core.Common.Localization.EN;
 using CMM.Core.BL.Core.Common.Localization.RU;
 using CMM.Core.BL.Core.Models.Settings;
+using EnumsNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +55,31 @@ namespace CMM.Core.BL.Core.Helpers
                 .GetRawConstantValue());
 
             return string.Join("\n", result);
+        }
+
+        /// <summary>
+        /// Сформировать текст предупреждения на основании кода предупреждения с учетом текущих настроек пользователя
+        /// </summary>
+        /// <param name="code">Код предупреждения</param>
+        /// <param name="settings">Текущие настройки сотрудника (использует поле Language)</param>
+        /// <returns></returns>
+        public static string GetWarningStringByCodeAndSettings(
+            WarningCodes code,
+            UserSettingsModel settings)
+        {
+            var warningDescription = code.AsString(EnumFormat.Description);
+
+            Type warningCodeDescriptionType = Assembly
+                .GetExecutingAssembly()
+                .GetTypes()
+                .First(
+                    t => t.Name ==
+                    $"WarningCodeDescriptions{LocalizationHelper.MapLanguageToAssemblySuffix(settings.Language)}"
+                );
+
+            return (string)warningCodeDescriptionType
+                .GetField(warningDescription)
+                .GetRawConstantValue();
         }
 
         /// <summary>
