@@ -79,7 +79,7 @@ namespace CMM.Core.BL.Core.Helpers
             var result = new List<string>();
 
             Type uIConstantType = GetTypeByNameAndSettings(
-                "UIConstants",
+                "MainMenuConstants",
                 settings);
 
             result.Add((string)uIConstantType
