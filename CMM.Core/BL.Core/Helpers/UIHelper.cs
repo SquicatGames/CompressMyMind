@@ -34,21 +34,23 @@ namespace CMM.Core.BL.Core.Helpers
                     $"UIConstants{LocalizationHelper.MapLanguageToAssemblySuffix(settings.Language)}"
                 );
 
-            //replace by Activator.CreateInstance
-            if (uIConstantType.Name is "UIConstantsEN")
-            {
-                result.Add(UIConstantsEN.Greeting);
-                result.Add(UIConstantsEN.CMMDescription);
-                result.Add(FillVersionString(UIConstantsEN.CMMVersion));
-                result.Add(UIConstantsEN.Copyright);
-            }
-            else if(uIConstantType.Name is "UIConstantsRU")
-            {
-                result.Add(UIConstantsRU.Greeting);
-                result.Add(UIConstantsRU.CMMDescription);
-                result.Add(FillVersionString(UIConstantsRU.CMMVersion));
-                result.Add(UIConstantsRU.Copyright);
-            }
+            result.Add((string)uIConstantType
+                .GetField("Greeting")
+                .GetRawConstantValue());
+
+            result.Add((string)uIConstantType
+                .GetField("CMMDescription")
+                .GetRawConstantValue());
+
+            result.Add(
+                FillVersionString((string)uIConstantType
+                .GetField("CMMVersion")
+                .GetRawConstantValue())
+                );
+
+            result.Add((string)uIConstantType
+                .GetField("Copyright")
+                .GetRawConstantValue());
 
             return string.Join("\n", result);
         }
