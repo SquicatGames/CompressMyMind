@@ -10,5 +10,7 @@
         public const string MainMenuOptionDecompress = "(2) Указать файл для распаковки";
         public const string MainMenuOptionChangeSettings = "(3) Изменить настройки программы";
         public const string MainMenuOptionQuit = "(4) Выйти из программы";
+
+        public const string BackToMainMenuGlobalOption = "(0) Вернуться в главное меню";
     }
 }

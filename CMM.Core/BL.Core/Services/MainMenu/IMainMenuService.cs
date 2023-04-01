@@ -7,6 +7,8 @@ namespace CMM.Core.BL.Core.Services.MainMenu
     /// </summary>
     internal interface IMainMenuService
     {
+        Task ShowMainMenuAsync(bool cleanConsole = true);
+
         /// <summary>
         /// Выполнить действия, выбранные пользователем
         /// </summary>

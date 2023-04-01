@@ -44,77 +44,15 @@ namespace CMM.Core.BL.Core.Helpers
         }
 
         /// <summary>
-        /// Сформировать описание основных опций программы (главное меню) на основании настроек пользователя
+        /// Проверить введенное пользователем значение на соответствие ожидаемому типу данных
         /// </summary>
-        /// <param name="settings">Текущие настройки пользователя (использует свойство Language)</param>
+        /// <param name="input">Нормализованная строка пользовательского ввода</param>
         /// <returns></returns>
-        public static string GetMainMenuStringBySettings(
-            UserSettingsModel settings)
+        public static bool ValidateInput(string input)
         {
-            var result = new List<string>();
+            Regex digitsOnly = new Regex(@"[\d]");
 
-            Type uIConstantType = AssemblyHelper.GetTypeByNameAndSettings(
-                "MainMenuConstants",
-                settings);
-
-            result.Add(uIConstantType
-                .GetConstString("MainMenuHeader"));
-
-            result.Add(uIConstantType
-                .GetConstString("MainMenuOptionCompress"));
-
-            result.Add(uIConstantType
-                .GetConstString("MainMenuOptionDecompress"));
-
-            result.Add(uIConstantType
-                .GetConstString("MainMenuOptionChangeSettings"));
-
-            result.Add(uIConstantType
-                .GetConstString("MainMenuOptionQuit"));
-
-            return string.Join("\n", result);
-        }
-
-        /// <summary>
-        /// Сформировать представление префикса ввода данных на основании настроек пользователя
-        /// </summary>
-        /// <param name="settings">Текущие настройки пользователя (использует свойство Language)</param>
-        /// <returns></returns>
-        public static string GetMainMenuInputPrefixBySettings(UserSettingsModel settings)
-        {
-            Type uIConstantType = AssemblyHelper.GetTypeByNameAndSettings(
-                "UIConstants",
-                settings);
-
-            return uIConstantType.GetConstString("MainMenuInputPrefix");
-        }
-
-        /// <summary>
-        /// Отпределить опцию меню по введенной пользователем строке
-        /// </summary>
-        /// <param name="input">Данные, введенные пользователем</param>
-        /// <param name="option">Опция меню</param>
-        /// <returns></returns>
-        public static bool TryGetMenuOptionFromString(
-            string input, 
-            out MainMenuOptions option)
-        {
-            option = default(MainMenuOptions);
-
-            string normalizedInput = input.Replace(" ", "");
-
-            if(!ValidateMainMenuInput(normalizedInput))
-                return false;
-
-            if(MainMenuOptions.TryParse(
-                normalizedInput, 
-                out option))
-            {
-                if (option.IsValid())
-                    return true;
-            }
-
-            return false;
+            return digitsOnly.IsMatch(input);
         }
 
         /// <summary>
@@ -132,18 +70,6 @@ namespace CMM.Core.BL.Core.Helpers
                     AppInfo.LowVersion.ToString())
                 .Replace("%BuildDate%",
                     AppInfo.BuildDate.ToString("dd.MM.yyyy"));
-        }
-
-        /// <summary>
-        /// Проверить введенное пользователем значение на соответствие ожидаемому типу данных
-        /// </summary>
-        /// <param name="input">Нормализованная строка пользовательского ввода</param>
-        /// <returns></returns>
-        private static bool ValidateMainMenuInput(string input)
-        {
-            Regex digitsOnly = new Regex(@"[\d]");
-
-            return digitsOnly.IsMatch(input);
         }
     }
 }

@@ -10,5 +10,7 @@
         public const string MainMenuOptionDecompress = "(2) Target file to decompress";
         public const string MainMenuOptionChangeSettings = "(3) Change main settings";
         public const string MainMenuOptionQuit = "(4) Exit program";
+
+        public const string BackToMainMenuGlobalOption = "(0) Back to main menu";
     }
 }

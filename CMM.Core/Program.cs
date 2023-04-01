@@ -36,31 +36,11 @@ namespace CMM.Core
                 }
             }
 
-            var mainMenuData = UIHelper.GetMainMenuStringBySettings(currentSettings);
-            var mainMenuInputPrefix = UIHelper.GetMainMenuInputPrefixBySettings(currentSettings);
-
-            //Отображение главного меню программы
-            Console.WriteLine(mainMenuData);
-
-            bool anyMainMenuOptionSelected = false;
-            MainMenuOptions selectedOption = default(MainMenuOptions);
-
-            while(!anyMainMenuOptionSelected)
-            {
-                Console.Write(mainMenuInputPrefix);
-                if(UIHelper.TryGetMenuOptionFromString(
-                    Console.ReadLine(),
-                    out MainMenuOptions option))
-                {
-                    anyMainMenuOptionSelected = true;
-                    selectedOption = option;
-                }
-            }
-
             MainMenuService mainMenuService = new(userSettingService);
 
-            //Выполнить действия в соответствие с выбором пользователя
-            mainMenuService.ProcessMainMenuOptionAsync(selectedOption);
+            var mainMenuTask = mainMenuService.ShowMainMenuAsync(false);
+
+            mainMenuTask.Wait();
         }
     }
 }
