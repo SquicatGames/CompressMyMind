@@ -7,6 +7,7 @@ namespace CMM.Core
     {
         static void Main(string[] args)
         {
+            //Инициализация класса настроек пользователя программы
             UserSettingService userSettingService = new();
 
             var greetingMessage = UIHelper
@@ -15,8 +16,11 @@ namespace CMM.Core
                         .GetCurrentSettings()
                 );
 
+            //Отображение текста приветствия с общей информацией о программе (учитывает локализацию)
             Console.WriteLine(greetingMessage);
+            Console.WriteLine();
 
+            //Получение строкового представления списка предупреждений, сформированного при загрузке настроек пользователя
             var settingLoadWarnings = userSettingService.GetFileSettingLoadWarnings();
 
             if (settingLoadWarnings != default)

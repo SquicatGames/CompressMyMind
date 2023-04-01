@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace CMM.Core.BL.Core.Common.Localization.RU
 {
+    /// <summary>
+    /// Класс основных констант пользовательского интерфейса (язык: Русский)
+    /// </summary>
     internal static class UIConstantsRU
     {
         public const string Greeting = "Добро пожаловать в CompressMyMind!";
