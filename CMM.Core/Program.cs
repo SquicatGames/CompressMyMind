@@ -5,29 +5,39 @@ namespace CMM.Core
 {
     internal class Program
     {
+        //Отключить отображение предупреждений
+        const bool _disableWarnings = false;
+
         static void Main(string[] args)
         {
             //Инициализация класса настроек пользователя программы
             UserSettingService userSettingService = new();
 
-            var greetingMessage = UIHelper
-                .GetGreetingMessageBySettings(
-                    userSettingService
-                        .GetCurrentSettings()
-                );
+            var currentSettings = userSettingService
+                        .GetCurrentSettings();
+
+            var greetingMessage = UIHelper.GetGreetingMessageBySettings(currentSettings);
 
             //Отображение текста приветствия с общей информацией о программе (учитывает локализацию)
             Console.WriteLine(greetingMessage);
             Console.WriteLine();
 
-            //Получение строкового представления списка предупреждений, сформированного при загрузке настроек пользователя
-            var settingLoadWarnings = userSettingService.GetFileSettingLoadWarnings();
+            if (!_disableWarnings)
+            {
+                //Получение строкового представления списка предупреждений, сформированного при загрузке настроек пользователя
+                var settingLoadWarnings = userSettingService.GetFileSettingLoadWarnings();
 
-            if (settingLoadWarnings != default)
-            { 
-                Console.WriteLine(settingLoadWarnings);
+                if (settingLoadWarnings != default)
+                {
+                    Console.WriteLine(settingLoadWarnings);
+                    Console.WriteLine();
+                }
             }
 
+            var mainMenuData = UIHelper.GetMainMenuStringBySettings(currentSettings);
+
+            //Отображение главного меню программы
+            Console.Write(mainMenuData);
             Console.ReadLine();
         }
     }

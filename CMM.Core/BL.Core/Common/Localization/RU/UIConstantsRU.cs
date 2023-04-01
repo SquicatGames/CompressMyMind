@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CMM.Core.BL.Core.Common.Localization.RU
+﻿namespace CMM.Core.BL.Core.Common.Localization.RU
 {
     /// <summary>
     /// Класс основных констант пользовательского интерфейса (язык: Русский)
@@ -15,5 +9,13 @@ namespace CMM.Core.BL.Core.Common.Localization.RU
         public const string CMMDescription = "Эта программа предоставляет легкий доступ к наиболее эффективным алгоритмам сжатия текста";
         public const string CMMVersion = "Версия %HighVersion%.%LowVersion% Опубликована: %BuildDate%";
         public const string Copyright = "MIT лицензия Стефанов Антон (SquiCat)";
+
+        public const string MainMenuInputPrefix = "->";
+
+        public const string MainMenuHeader = "Выберете пункт меню, введя соответствующее число:";
+        public const string MainMenuOptionCompress = "(1) Указать файл для сжатия";
+        public const string MainMenuOptionDecompress = "(2) Указать файл для распаковки";
+        public const string MainMenuOptionChangeSettings = "(3) Изменить настройки программы";
+        public const string MainMenuOptionQuit = "(4) Выйти из программы";
     }
 }

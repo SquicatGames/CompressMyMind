@@ -1,10 +1,5 @@
 ﻿using CMM.Core.BL.Core.Common.Environment;
 using CMM.Core.BL.Core.Models.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CMM.Core.BL.Core.Services.UserSettings
 {
@@ -20,7 +15,7 @@ namespace CMM.Core.BL.Core.Services.UserSettings
         void LoadSettingsFromFile(string path = DefaultSettings.DFSettingsPath);
 
         /// <summary>
-        /// Получить текущие настройки сотрудника
+        /// Получить текущие настройки пользователя
         /// </summary>
         /// <returns>Возвращает активные на момент запуска программы настройки</returns>
         UserSettingsModel GetCurrentSettings();
