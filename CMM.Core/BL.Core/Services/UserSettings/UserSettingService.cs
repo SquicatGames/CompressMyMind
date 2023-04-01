@@ -1,6 +1,7 @@
 ﻿using CMM.Core.BL.Core.Common.Environment;
 using CMM.Core.BL.Core.Helpers;
 using CMM.Core.BL.Core.Models.Settings;
+using CMM.Core.SL.Core.Extensions.Enum;
 using System.Text.Json;
 
 namespace CMM.Core.BL.Core.Services.UserSettings
@@ -77,9 +78,13 @@ namespace CMM.Core.BL.Core.Services.UserSettings
             if(!_isSettingFileFound
                 || !_isSettingFileParsed)
             {
-                return UIHelper.GetWarningStringByCodeAndSettings(
-                    Common.WarningCodes.CannotLoadUserSettings,
-                    _settings);
+                //Сформировать текст предупреждения на основании кода предупреждения
+                //с учетом текущих настроек пользователя
+                return Common.WarningCodes
+                    .CannotLoadUserSettings
+                        .GetLocalizedDescription(
+                            _settings,
+                            "WarningCodeDescriptions");
             }
 
             return null;

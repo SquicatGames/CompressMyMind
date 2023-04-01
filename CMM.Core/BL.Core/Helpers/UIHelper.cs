@@ -1,7 +1,9 @@
 ﻿using CMM.Core.BL.Core.Common;
 using CMM.Core.BL.Core.Common.Menu;
 using CMM.Core.BL.Core.Models.Settings;
-using EnumsNET;
+using CMM.Core.SL.Core.Extensions.Enum;
+using CMM.Core.SL.Core.Extensions.TypeExt;
+using CMM.Core.SL.Core.Helpers;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
@@ -22,50 +24,25 @@ namespace CMM.Core.BL.Core.Helpers
         {
             var result = new List<string>();
 
-            Type uIConstantType = GetTypeByNameAndSettings(
+            Type uIConstantType = AssemblyHelper.GetTypeByNameAndSettings(
                 "UIConstants",
                 settings);
 
-            result.Add((string)uIConstantType
-                .GetField("Greeting")
-                .GetRawConstantValue());
-
-            result.Add((string)uIConstantType
-                .GetField("CMMDescription")
-                .GetRawConstantValue());
+            result.Add(
+                uIConstantType.CMMGetConstString("Greeting"));
 
             result.Add(
-                FillVersionString((string)uIConstantType
-                .GetField("CMMVersion")
-                .GetRawConstantValue())
-                );
+                uIConstantType.CMMGetConstString("CMMDescription"));
 
-            result.Add((string)uIConstantType
-                .GetField("Copyright")
-                .GetRawConstantValue());
+            result.Add(
+                FillVersionString(
+                    uIConstantType.CMMGetConstString("CMMVersion")
+                ));
+
+            result.Add(
+                uIConstantType.CMMGetConstString("Copyright"));
 
             return string.Join("\n", result);
-        }
-
-        /// <summary>
-        /// Сформировать текст предупреждения на основании кода предупреждения с учетом текущих настроек пользователя
-        /// </summary>
-        /// <param name="code">Код предупреждения</param>
-        /// <param name="settings">Текущие настройки пользователя (использует свойство Language)</param>
-        /// <returns></returns>
-        public static string GetWarningStringByCodeAndSettings(
-            WarningCodes code,
-            UserSettingsModel settings)
-        {
-            var warningDescription = code.AsString(EnumFormat.Description);
-
-            Type warningCodeDescriptionType = GetTypeByNameAndSettings(
-                "WarningCodeDescriptions",
-                settings);
-
-            return (string)warningCodeDescriptionType
-                .GetField(warningDescription)
-                .GetRawConstantValue();
         }
 
         /// <summary>
@@ -78,29 +55,24 @@ namespace CMM.Core.BL.Core.Helpers
         {
             var result = new List<string>();
 
-            Type uIConstantType = GetTypeByNameAndSettings(
+            Type uIConstantType = AssemblyHelper.GetTypeByNameAndSettings(
                 "MainMenuConstants",
                 settings);
 
-            result.Add((string)uIConstantType
-                .GetField("MainMenuHeader")
-                .GetRawConstantValue());
+            result.Add(uIConstantType
+                .CMMGetConstString("MainMenuHeader"));
 
-            result.Add((string)uIConstantType
-                .GetField("MainMenuOptionCompress")
-                .GetRawConstantValue());
+            result.Add(uIConstantType
+                .CMMGetConstString("MainMenuOptionCompress"));
 
-            result.Add((string)uIConstantType
-                .GetField("MainMenuOptionDecompress")
-                .GetRawConstantValue());
+            result.Add(uIConstantType
+                .CMMGetConstString("MainMenuOptionDecompress"));
 
-            result.Add((string)uIConstantType
-                .GetField("MainMenuOptionChangeSettings")
-                .GetRawConstantValue());
+            result.Add(uIConstantType
+                .CMMGetConstString("MainMenuOptionChangeSettings"));
 
-            result.Add((string)uIConstantType
-                .GetField("MainMenuOptionQuit")
-                .GetRawConstantValue());
+            result.Add(uIConstantType
+                .CMMGetConstString("MainMenuOptionQuit"));
 
             return string.Join("\n", result);
         }
@@ -112,34 +84,11 @@ namespace CMM.Core.BL.Core.Helpers
         /// <returns></returns>
         public static string GetMainMenuInputPrefixBySettings(UserSettingsModel settings)
         {
-            Type uIConstantType = GetTypeByNameAndSettings(
+            Type uIConstantType = AssemblyHelper.GetTypeByNameAndSettings(
                 "UIConstants",
                 settings);
 
-            return (string)uIConstantType
-                .GetField("MainMenuInputPrefix")
-                .GetRawConstantValue();
-        }
-
-        /// <summary>
-        /// Сформировать текст сообщения при выборе пункта меню на основании настроек пользователя
-        /// </summary>
-        /// <param name="option">Выбранный пункт меню</param>
-        /// <param name="settings">Настройки пользователя</param>
-        /// <returns></returns>
-        public static string GetMainMenuOptionTitleBySettings(
-            MainMenuOptions option,
-            UserSettingsModel settings)
-        {
-            var mainMenuOptionDescription = option.AsString(EnumFormat.Description);
-
-            Type mainMenuOptionDescriptionsType = GetTypeByNameAndSettings(
-                "MainMenuOptionDescriptions",
-                settings);
-
-            return (string)mainMenuOptionDescriptionsType
-                .GetField(mainMenuOptionDescription)
-                .GetRawConstantValue();
+            return uIConstantType.CMMGetConstString("MainMenuInputPrefix");
         }
 
         /// <summary>
@@ -168,25 +117,6 @@ namespace CMM.Core.BL.Core.Helpers
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Получить представление типа класса по его названию и суффиксу локализации
-        /// </summary>
-        /// <param name="name">Название класса без учета суффикса локализации</param>
-        /// <param name="settings">Настройки пользователя (использует свойство Language)</param>
-        /// <returns></returns>
-        private static Type GetTypeByNameAndSettings(
-            string name,
-            UserSettingsModel settings)
-        {
-            return Assembly
-                .GetExecutingAssembly()
-                .GetTypes()
-                .First(
-                    t => t.Name ==
-                    $"{name}{LocalizationHelper.MapLanguageToAssemblySuffix(settings.Language)}"
-                );
         }
 
         /// <summary>

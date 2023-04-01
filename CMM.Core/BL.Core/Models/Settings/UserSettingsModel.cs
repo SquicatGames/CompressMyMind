@@ -1,4 +1,5 @@
 ﻿using CMM.Core.BL.Core.Common;
+using System.ComponentModel;
 
 namespace CMM.Core.BL.Core.Models.Settings
 {
@@ -18,7 +19,7 @@ namespace CMM.Core.BL.Core.Models.Settings
         public bool ShowProgress { get; set; }
 
         /// <summary>
-        /// Интервал обновления данных строки состояния (в мсек)
+        /// Интервал обновления данных строки состояния (в мс)
         /// </summary>
         public int ProgressBarDelay { get; set; }
     }
