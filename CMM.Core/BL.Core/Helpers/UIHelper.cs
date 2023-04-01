@@ -1,10 +1,8 @@
-﻿using CMM.Core.BL.Core.Common;
-using CMM.Core.BL.Core.Common.Menu;
+﻿using CMM.Core.BL.Core.Common.Menu;
 using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.SL.Core.Extensions.Enum;
 using CMM.Core.SL.Core.Extensions.TypeExt;
 using CMM.Core.SL.Core.Helpers;
-using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace CMM.Core.BL.Core.Helpers
@@ -29,18 +27,18 @@ namespace CMM.Core.BL.Core.Helpers
                 settings);
 
             result.Add(
-                uIConstantType.CMMGetConstString("Greeting"));
+                uIConstantType.GetConstString("Greeting"));
 
             result.Add(
-                uIConstantType.CMMGetConstString("CMMDescription"));
+                uIConstantType.GetConstString("CMMDescription"));
 
             result.Add(
                 FillVersionString(
-                    uIConstantType.CMMGetConstString("CMMVersion")
+                    uIConstantType.GetConstString("CMMVersion")
                 ));
 
             result.Add(
-                uIConstantType.CMMGetConstString("Copyright"));
+                uIConstantType.GetConstString("Copyright"));
 
             return string.Join("\n", result);
         }
@@ -60,19 +58,19 @@ namespace CMM.Core.BL.Core.Helpers
                 settings);
 
             result.Add(uIConstantType
-                .CMMGetConstString("MainMenuHeader"));
+                .GetConstString("MainMenuHeader"));
 
             result.Add(uIConstantType
-                .CMMGetConstString("MainMenuOptionCompress"));
+                .GetConstString("MainMenuOptionCompress"));
 
             result.Add(uIConstantType
-                .CMMGetConstString("MainMenuOptionDecompress"));
+                .GetConstString("MainMenuOptionDecompress"));
 
             result.Add(uIConstantType
-                .CMMGetConstString("MainMenuOptionChangeSettings"));
+                .GetConstString("MainMenuOptionChangeSettings"));
 
             result.Add(uIConstantType
-                .CMMGetConstString("MainMenuOptionQuit"));
+                .GetConstString("MainMenuOptionQuit"));
 
             return string.Join("\n", result);
         }
@@ -88,7 +86,7 @@ namespace CMM.Core.BL.Core.Helpers
                 "UIConstants",
                 settings);
 
-            return uIConstantType.CMMGetConstString("MainMenuInputPrefix");
+            return uIConstantType.GetConstString("MainMenuInputPrefix");
         }
 
         /// <summary>

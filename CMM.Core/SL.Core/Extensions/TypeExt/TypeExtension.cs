@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CMM.Core.SL.Core.Extensions.TypeExt
+﻿namespace CMM.Core.SL.Core.Extensions.TypeExt
 {
     /// <summary>
     /// Расширение класса Type
@@ -17,7 +11,7 @@ namespace CMM.Core.SL.Core.Extensions.TypeExt
         /// <param name="type">Тип статического класса</param>
         /// <param name="fieldName">Название поля константного типа</param>
         /// <returns></returns>
-        public static string CMMGetConstString(
+        public static string GetConstString(
             this Type type,
             string fieldName)
         {

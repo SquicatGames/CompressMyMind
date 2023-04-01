@@ -1,14 +1,7 @@
-﻿using CMM.Core.BL.Core.Common;
-using CMM.Core.BL.Core.Models.Settings;
+﻿using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.SL.Core.Extensions.TypeExt;
 using CMM.Core.SL.Core.Helpers;
-using Microsoft.VisualBasic.FileIO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CMM.Core.SL.Core.Extensions.Enum
 {
@@ -69,7 +62,7 @@ namespace CMM.Core.SL.Core.Extensions.Enum
                 descriptionsTypeNamePrefix,
                 settings);
 
-            return desctiptionsType.CMMGetConstString(desctiption);
+            return desctiptionsType.GetConstString(desctiption);
         }
 
         /// <summary>

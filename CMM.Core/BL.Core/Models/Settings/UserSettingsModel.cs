@@ -1,5 +1,4 @@
 ﻿using CMM.Core.BL.Core.Common;
-using System.ComponentModel;
 
 namespace CMM.Core.BL.Core.Models.Settings
 {

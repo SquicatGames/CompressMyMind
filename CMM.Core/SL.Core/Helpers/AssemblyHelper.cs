@@ -1,11 +1,6 @@
 ﻿using CMM.Core.BL.Core.Helpers;
 using CMM.Core.BL.Core.Models.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CMM.Core.SL.Core.Helpers
 {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CMM.Core.BL.Core.Common.Localization.EN
+﻿namespace CMM.Core.BL.Core.Common.Localization.EN
 {
     /// <summary>
     /// Класс основных констант главного меню (язык: Английский)

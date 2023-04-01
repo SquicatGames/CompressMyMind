@@ -1,17 +1,8 @@
-﻿using CMM.Core.BL.Core.Common.Environment;
-using CMM.Core.BL.Core.Common.Menu;
+﻿using CMM.Core.BL.Core.Common.Menu;
 using CMM.Core.BL.Core.Common.Settings;
 using CMM.Core.BL.Core.Helpers;
-using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.BL.Core.Services.UserSettings;
 using CMM.Core.SL.Core.Extensions.Enum;
-using Microsoft.VisualBasic.FileIO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CMM.Core.BL.Core.Services.MainMenu
 {
