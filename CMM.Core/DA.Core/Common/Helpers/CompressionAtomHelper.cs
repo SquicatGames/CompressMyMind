@@ -119,10 +119,30 @@ namespace CMM.Core.DA.Core.Common.Helpers
         {
             var result = new List<byte>();
 
+            Dictionary<byte, byte> mapReversedSemibitValue = new Dictionary<byte, byte>
+            {
+                { (byte)0, (byte)0 },
+                { (byte)8, (byte)1 },
+                { (byte)4, (byte)2 },
+                { (byte)12, (byte)3 },
+                { (byte)2, (byte)4 },
+                { (byte)10, (byte)5 },
+                { (byte)6, (byte)6 },
+                { (byte)14, (byte)7 },
+                { (byte)1, (byte)8 },
+                { (byte)9, (byte)9 },
+                { (byte)5, (byte)10 },
+                { (byte)13, (byte)11 },
+                { (byte)3, (byte)12 },
+                { (byte)11, (byte)13 },
+                { (byte)7, (byte)14 },
+                { (byte)15, (byte)15 },
+            };
+
             foreach(var _byte in source)
             {
-                result.Add((byte)(_byte / 16));
-                result.Add((byte)(_byte % 16));
+                result.Add(mapReversedSemibitValue[(byte)(_byte / 16)]);
+                result.Add(mapReversedSemibitValue[(byte)(_byte % 16)]);
             }
 
             return result;

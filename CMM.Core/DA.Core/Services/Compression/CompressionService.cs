@@ -362,7 +362,13 @@ namespace CMM.Core.DA.Core.Services.Compression
                         }
                     }
 
-                    string serializedCharsetInfo = JsonSerializer.Serialize(charsetInfo);
+                    string serializedCharsetInfo = JsonSerializer
+                        .Serialize(
+                            charsetInfo
+                            .OrderBy(pair => pair.Value.Code)
+                            .ToDictionary(
+                                pair => pair.Key,
+                                pair => pair.Value));
 
                     outStream.WriteByte(
                         (byte)(serializedCharsetInfo.Length % 256));
