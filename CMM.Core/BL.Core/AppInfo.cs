@@ -18,6 +18,6 @@
         /// <summary>
         /// Дата текущей сборки
         /// </summary>
-        public static DateOnly BuildDate = new DateOnly(2023, 03, 31);
+        public static DateOnly BuildDate = new DateOnly(2023, 04, 02);
     }
 }
