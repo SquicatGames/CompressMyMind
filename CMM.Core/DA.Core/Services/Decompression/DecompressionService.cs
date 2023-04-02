@@ -1,12 +1,6 @@
 ﻿using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.DA.Core.Common;
 using CMM.Core.SL.Core.Extensions.Enum;
-using Microsoft.VisualBasic.FileIO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CMM.Core.DA.Core.Services.Decompression
 {
@@ -25,9 +19,9 @@ namespace CMM.Core.DA.Core.Services.Decompression
 
             try
             {
-                using (FileStream fileStream = File.OpenRead(fileName))
+                using (FileStream inputFileStream = File.OpenRead(fileName))
                 {
-                    int readByteResult = fileStream.ReadByte();
+                    int readByteResult = inputFileStream.ReadByte();
                     if (readByteResult != -1)
                         header = (byte)readByteResult;
 
@@ -39,16 +33,55 @@ namespace CMM.Core.DA.Core.Services.Decompression
                     {
                         using (FileStream outputFileStream = File.OpenWrite(outputFileName))
                         {
-                            //попытка распаковки
+                            switch (method)
+                            {
+                                case CompressionMethods.DC4:
+                                    {
+                                        ProcessDecompressionMethodNone(
+                                        inputFileStream,
+                                        outputFileStream,
+                                        settings);
+                                    }
+                                    break;
+
+                                case CompressionMethods.HC1:
+                                    {
+                                        ProcessDecompressionMethodNone(
+                                        inputFileStream,
+                                        outputFileStream,
+                                        settings);
+                                    }
+                                    break;
+
+                                case CompressionMethods.RC:
+                                    {
+                                        ProcessDecompressionMethodNone(
+                                        inputFileStream,
+                                        outputFileStream,
+                                        settings);
+                                    }
+                                    break;
+
+                                case CompressionMethods.None:
+                                default:
+                                    {
+                                        ProcessDecompressionMethodNone(
+                                        inputFileStream,
+                                        outputFileStream,
+                                        settings);
+                                    }
+                                    break;
+
+                            }
                             outputFileStream.Close();
-                            fileStream.Close();
+                            inputFileStream.Close();
                         }
                         return true;
                     }
                     else
                     {
                         //отобразить ошибку
-                        fileStream.Close();
+                        inputFileStream.Close();
                         return false;
                     }
                 }
@@ -75,6 +108,24 @@ namespace CMM.Core.DA.Core.Services.Decompression
             }
 
             return false;
+        }
+
+        private void ProcessDecompressionMethodNone(
+            FileStream inStream,
+            FileStream outStream,
+            UserSettingsModel settings)
+        {
+            int bytesRead = 1;
+            while (bytesRead > 0)
+            {
+                byte[] bytes = new byte[CompressionConstants.BufferSize];
+                bytesRead = inStream.Read(
+                    bytes,
+                    0,
+                    bytes.Length);
+
+                outStream.Write(bytes, 0, bytesRead);
+            }
         }
     }
 }

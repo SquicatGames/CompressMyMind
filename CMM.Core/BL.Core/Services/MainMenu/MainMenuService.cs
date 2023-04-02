@@ -208,6 +208,8 @@ namespace CMM.Core.BL.Core.Services.MainMenu
                 await compressionService.TryCompressFileAsync(
                     sourceFileName,
                     _userSettingService.GetCurrentSettings());
+
+                await ShowMainMenuAsync();
             }
         }
 
@@ -265,6 +267,8 @@ namespace CMM.Core.BL.Core.Services.MainMenu
                 await decompressionService.TryDecompressFileAsync(
                     sourceFileName,
                     _userSettingService.GetCurrentSettings());
+
+                await ShowMainMenuAsync();
             }
         }
 
