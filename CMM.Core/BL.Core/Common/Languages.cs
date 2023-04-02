@@ -9,9 +9,9 @@ namespace CMM.Core.BL.Core.Common
     enum Languages
     {
         [Description("English")]
-        English = 0,
+        English = 1,
 
         [Description("Русский")]
-        Russian = 1
+        Russian = 2
     }
 }

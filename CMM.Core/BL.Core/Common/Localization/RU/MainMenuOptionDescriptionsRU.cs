@@ -7,7 +7,7 @@
     {
         public const string MainMenuCompressionOptionTitle = "Сжатие текстовых данных. \nУкажите расположение и имя файла и нажмите Enter чтобы продолжить";
         public const string MainMenuDecompressionOptionTitle = "Распаковка текстовых данных. \nУкажите расположение и имя архива и нажмите Enter чтобы продолжить";
-        public const string MainMenuChangeSettingsOptionTitle = "Основные настройки сотрудника. \nВыберете настройку для изменения, введя соответствующее число";
+        public const string MainMenuChangeSettingsOptionTitle = "Основные настройки пользователя. \nВыберете настройку для изменения, введя соответствующее число";
         public const string MainMenuQuitOptionTitle = "Программа сохранит актуальные настройки пользователя и будет завершена через несколько секунд. \nСпасибо, что используете CompressMyMind!";
     }
 }

@@ -1,4 +1,5 @@
-﻿using CMM.Core.BL.Core.Common.Menu;
+﻿using CMM.Core.BL.Core.Common.Localization.RU;
+using CMM.Core.BL.Core.Common.Menu;
 using CMM.Core.BL.Core.Common.Settings;
 using CMM.Core.BL.Core.Helpers;
 using CMM.Core.BL.Core.Models.Settings;
@@ -6,6 +7,7 @@ using CMM.Core.BL.Core.Services.UserSettings;
 using CMM.Core.SL.Core.Extensions.Enum;
 using CMM.Core.SL.Core.Extensions.TypeExt;
 using CMM.Core.SL.Core.Helpers;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace CMM.Core.BL.Core.Services.MainMenu
@@ -22,16 +24,6 @@ namespace CMM.Core.BL.Core.Services.MainMenu
         public MainMenuService(IUserSettingService settingService)
         {
             _userSettingService = settingService;
-        }
-
-        public async Task ProcessMainMenuOptionAsync(MainMenuOptions option)
-        {
-            switch (option)
-            {
-                case MainMenuOptions.ChangeSettings: ProcessMainMenuChangeSettingsOption(); return;
-                case MainMenuOptions.Quit: ProcessMainMenuQuitOption(); return;
-                default: ProcessMainMenuQuitOption(); return;
-            }
         }
 
         public async Task ShowMainMenuAsync(bool cleanConsole = true)
@@ -62,6 +54,29 @@ namespace CMM.Core.BL.Core.Services.MainMenu
 
             //Выполнить действия в соответствие с выбором пользователя
             await ProcessMainMenuOptionAsync(selectedOption);
+        }
+
+        public async Task ProcessMainMenuOptionAsync(MainMenuOptions option)
+        {
+            switch (option)
+            {
+                case MainMenuOptions.Compress: await ProcessMainMenuCompressOptionAsync(); return;
+                case MainMenuOptions.Decompress: await ProcessMainMenuDecompressOptionAsync(); return;
+                case MainMenuOptions.ChangeSettings: await ProcessMainMenuChangeSettingsOption(); return;
+                case MainMenuOptions.Quit: ProcessMainMenuQuitOption(); return;
+                default: ProcessMainMenuQuitOption(); return;
+            }
+        }
+
+        public async Task ProcessChangeSettingsMenuOptionAsync(ChangeSettingsMenuOptions option)
+        {
+            switch (option)
+            {
+                case ChangeSettingsMenuOptions.Language: ProcessChangeSettingsMenuLanguageOption(); return;
+                case ChangeSettingsMenuOptions.ShowProgress: ProcessChangeSettingsMenuShowProgressOption(); return;
+                case ChangeSettingsMenuOptions.ProgressBarDelay: await ProcessChangeSettingsMenuProgressBarDelayOption(); return;
+                default: await ShowMainMenuAsync(); return;
+            }
         }
 
         /// <summary>
@@ -138,7 +153,17 @@ namespace CMM.Core.BL.Core.Services.MainMenu
             return false;
         }
 
-        private void ProcessMainMenuChangeSettingsOption()
+        private async Task ProcessMainMenuCompressOptionAsync()
+        {
+
+        }
+
+        private async Task ProcessMainMenuDecompressOptionAsync()
+        {
+
+        }
+
+        private async Task ProcessMainMenuChangeSettingsOption()
         {
             Console.Clear();
 
@@ -171,9 +196,152 @@ namespace CMM.Core.BL.Core.Services.MainMenu
                         .GetCurrentSettings())
                 .GetConstString("BackToMainMenuGlobalOption"));
 
-            Console.Write(mainMenuInputPrefix);
+            bool anyChangeSettingsMenuOptionSelected = false;
+            ChangeSettingsMenuOptions selectedOption = default(ChangeSettingsMenuOptions);
 
-            Console.ReadLine();
+            //Получить корректный ввод от пользователя программы
+            while (!anyChangeSettingsMenuOptionSelected)
+            {
+                Console.Write(mainMenuInputPrefix);
+                if (TryGetChangeSettingsMenuOptionFromString(
+                    Console.ReadLine(),
+                    out ChangeSettingsMenuOptions option))
+                {
+                    anyChangeSettingsMenuOptionSelected = true;
+                    selectedOption = option;
+                }
+            }
+
+            //Выполнить действия в соответствие с выбором пользователя
+            if ((int)selectedOption == 0)
+            {
+                ShowMainMenuAsync();
+            }
+            else
+            {
+                await ProcessChangeSettingsMenuOptionAsync(selectedOption);
+            }
+        }
+
+        private static bool TryGetChangeSettingsMenuOptionFromString(
+            string input,
+            out ChangeSettingsMenuOptions option)
+        {
+            option = default(ChangeSettingsMenuOptions);
+
+            string normalizedInput = input.Replace(" ", "");
+
+            if (!UIHelper.ValidateInput(normalizedInput))
+                return false;
+
+            if (ChangeSettingsMenuOptions.TryParse(
+                normalizedInput,
+                out option))
+            {
+                if ((int)option == 0)
+                    return true;
+
+                if (option.IsValid())
+                    return true;
+            }
+
+            return false;
+        }
+
+        private void ProcessChangeSettingsMenuLanguageOption()
+        {
+
+        }
+
+        private void ProcessChangeSettingsMenuShowProgressOption()
+        {
+
+        }
+
+        private async Task ProcessChangeSettingsMenuProgressBarDelayOption()
+        {
+            Console.Clear();
+
+            var currentSettings = _userSettingService.GetCurrentSettings();
+
+            Console.WriteLine(
+                ChangeSettingsMenuOptions.ProgressBarDelay
+                    .GetLocalizedDescription(
+                        currentSettings,
+                        "UserSettingPropertyDescriptions"));
+
+            var changeSettingsMenuConstantsType = AssemblyHelper
+                .GetTypeByNameAndSettings(
+                    "ChangeSettingsMenuConstants",
+                    currentSettings);
+
+            Console.WriteLine(changeSettingsMenuConstantsType
+                .GetConstString("ChangeSettingsProgressBarDelayOptionTitle"));
+
+            var currentValuePrefix = changeSettingsMenuConstantsType
+                .GetConstString("ChangeSettingsShowCurrentValueMessage");
+
+            Console.WriteLine($"{currentValuePrefix}{currentSettings.ProgressBarDelay}");
+
+            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(
+                _userSettingService
+                    .GetCurrentSettings());
+
+            bool anyValidDelayValueTyped = false;
+            int newDelayValue = 0;
+
+            //Получить корректный ввод от пользователя программы
+            while (!anyValidDelayValueTyped)
+            {
+                Console.Write(mainMenuInputPrefix);
+                if (TryGetProgressBarDelayValueFromString(
+                    Console.ReadLine(),
+                    out int delayValue))
+                {
+                    anyValidDelayValueTyped = true;
+                    newDelayValue = delayValue;
+                }
+            }
+
+            if (newDelayValue == 0)
+                await ProcessMainMenuChangeSettingsOption();
+            else
+            {
+                currentSettings.ProgressBarDelay = newDelayValue;
+
+                //Сохранение новых настроек
+                _userSettingService.SetCurrentSettings(currentSettings);
+
+                Console.WriteLine(changeSettingsMenuConstantsType
+                    .GetConstString("ChangeSettingsSuccessMessage"));
+
+                Console.Write(mainMenuInputPrefix);
+                Console.ReadLine();
+
+                await ProcessMainMenuChangeSettingsOption();
+            }
+        }
+
+        private bool TryGetProgressBarDelayValueFromString(
+            string input, 
+            out int delayValue)
+        {
+            delayValue = 0;
+
+            string normalizedInput = input.Replace(" ", "");
+
+            if (!UIHelper.ValidateInput(normalizedInput))
+                return false;
+
+            if(int.TryParse(
+                normalizedInput,
+                out int value))
+            {
+                delayValue = value;
+                return true;
+            }
+
+            return false;
         }
 
         private void ProcessMainMenuQuitOption()

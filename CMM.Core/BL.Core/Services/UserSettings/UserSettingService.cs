@@ -88,5 +88,17 @@ namespace CMM.Core.BL.Core.Services.UserSettings
 
             return null;
         }
+
+        public void SetCurrentSettings(UserSettingsModel newSettings)
+        {
+            if (newSettings == null)
+            {
+                _settings = DefaultSettings.DFSettings;
+            }
+            else
+            {
+                _settings = newSettings;
+            }
+        }
     }
 }

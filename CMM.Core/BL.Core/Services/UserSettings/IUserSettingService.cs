@@ -31,5 +31,11 @@ namespace CMM.Core.BL.Core.Services.UserSettings
         /// </summary>
         /// <returns>Строка с локализованным текстом предупреждений или NULL</returns>
         string GetFileSettingLoadWarnings();
+
+        /// <summary>
+        /// Изменить текущие настройки пользователя
+        /// </summary>
+        /// <param name="newSettings">Новое значение пользовательских настроек</param>
+        void SetCurrentSettings(UserSettingsModel newSettings);
     }
 }

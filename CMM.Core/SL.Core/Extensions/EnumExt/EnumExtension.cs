@@ -47,7 +47,7 @@ namespace CMM.Core.SL.Core.Extensions.Enum
         /// типа перечисление с учетом текущих настроек пользователя
         /// </summary>
         /// <param name="_enum">Перечисление</param>
-        /// <param name="settings">Настройки сотрудника</param>
+        /// <param name="settings">Настройки пользователя</param>
         /// <param name="descriptionsTypeNamePrefix">Префикс имени типа, хранящего
         /// строковые константы, описывающие элементы данного перечисления</param>
         /// <returns></returns>
