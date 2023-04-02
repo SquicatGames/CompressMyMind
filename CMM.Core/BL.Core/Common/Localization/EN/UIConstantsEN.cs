@@ -17,5 +17,7 @@
 
         public const string DecompressionSuccessMessage = "File decompression is successfully done! \nPress Enter to go back to Main menu";
         public const string DecompressionErrorMessagePattern = "An error occured while decompressing file:\n%Message%\nPress Enter to go back to Main menu";
+
+        public const string FileProcessingStateMessagePattern = "Processed %ProcessedBytes% bytes";
     }
 }

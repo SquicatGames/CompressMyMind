@@ -1,6 +1,7 @@
 ﻿using CMM.Core.BL.Core.Helpers;
 using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.DA.Core.Common;
+using System.Diagnostics;
 
 namespace CMM.Core.DA.Core.Services.Compression
 {
@@ -78,7 +79,7 @@ namespace CMM.Core.DA.Core.Services.Compression
                             pair => pair.Value);
 
                     int methodHC1MostFrequentSum = hC1Map
-                        .Take(16)
+                        .Take(15)
                         .Sum(pair => pair.Value);
 
                     methodHC1ResultLenght = (int)(methodHC1MostFrequentSum * 0.5
@@ -255,6 +256,11 @@ namespace CMM.Core.DA.Core.Services.Compression
             UserSettingsModel settings)
         {
             int bytesRead = 1;
+            long bytesProcessed = 1;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             while (bytesRead > 0)
             {
                 byte[] bytes = new byte[CompressionConstants.BufferSize];
@@ -264,6 +270,21 @@ namespace CMM.Core.DA.Core.Services.Compression
                     bytes.Length);
 
                 outStream.Write(bytes, 0, bytesRead);
+
+                bytesProcessed += bytesRead;
+
+                if (settings.ShowProgress)
+                {
+                    if (sw.ElapsedMilliseconds >= settings.ProgressBarDelay)
+                    {
+                        UIHelper.ProcessCurrentFileProcessingStateMessage(
+                            bytesProcessed,
+                            settings);
+
+                        sw.Reset();
+                        sw.Start();
+                    }
+                }
             }
         }
     }

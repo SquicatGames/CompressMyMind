@@ -2,6 +2,7 @@
 using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.DA.Core.Common;
 using CMM.Core.SL.Core.Extensions.Enum;
+using System.Diagnostics;
 
 namespace CMM.Core.DA.Core.Services.Decompression
 {
@@ -123,6 +124,11 @@ namespace CMM.Core.DA.Core.Services.Decompression
             UserSettingsModel settings)
         {
             int bytesRead = 1;
+            long bytesProcessed = 1;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             while (bytesRead > 0)
             {
                 byte[] bytes = new byte[CompressionConstants.BufferSize];
@@ -132,6 +138,21 @@ namespace CMM.Core.DA.Core.Services.Decompression
                     bytes.Length);
 
                 outStream.Write(bytes, 0, bytesRead);
+
+                bytesProcessed += bytesRead;
+
+                if (settings.ShowProgress)
+                {
+                    if (sw.ElapsedMilliseconds >= settings.ProgressBarDelay)
+                    {
+                        UIHelper.ProcessCurrentFileProcessingStateMessage(
+                            bytesProcessed,
+                            settings);
+
+                        sw.Reset();
+                        sw.Start();
+                    }
+                }
             }
         }
     }

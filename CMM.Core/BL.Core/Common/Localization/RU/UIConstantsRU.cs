@@ -17,5 +17,7 @@
 
         public const string DecompressionSuccessMessage = "Распаковка файла успешно завершена \nНажмите Enter чтобы вернуться в главное меню";
         public const string DecompressionErrorMessagePattern = "При распаковке файла возникла ошибка:\n%Message%\nНажмите Enter чтобы вернуться в главное меню";
+
+        public const string FileProcessingStateMessagePattern = "Обработано %ProcessedBytes% байт";
     }
 }

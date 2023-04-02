@@ -1,5 +1,6 @@
 ﻿using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.BL.Core.Services.MainMenu;
+using CMM.Core.SL.Core.Extensions.IntExt;
 using CMM.Core.SL.Core.Extensions.TypeExt;
 using CMM.Core.SL.Core.Helpers;
 using System.Text.RegularExpressions;
@@ -155,6 +156,28 @@ namespace CMM.Core.BL.Core.Helpers
         }
 
         /// <summary>
+        /// Уведомить пользователя о текущем статусе обработки файла
+        /// </summary>
+        /// <param name="settings">Настройки пользователя</param>
+        public static void ProcessCurrentFileProcessingStateMessage(
+            long bytesProcessed,
+            UserSettingsModel settings,
+            bool clearConsole = true)
+        {
+            if (clearConsole)
+                Console.Clear();
+
+            Type uIConstantType = AssemblyHelper.GetTypeByNameAndSettings(
+                "UIConstants",
+                settings);
+
+            Console.WriteLine(FillFileProcessingStateMessageString(
+                uIConstantType
+                    .GetConstString("FileProcessingStateMessagePattern"),
+                bytesProcessed));
+        }
+
+        /// <summary>
         /// Сформировать строковое описание текущей версии программы с учетом локализации
         /// </summary>
         /// <param name="pattern">Локализованный паттерн строки версионирования</param>
@@ -185,6 +208,16 @@ namespace CMM.Core.BL.Core.Helpers
                 .Replace(
                     "%Message%",
                     message);
+        }
+
+        private static string FillFileProcessingStateMessageString(
+            string pattern,
+            long bytesProcessed)
+        {
+            return pattern
+                .Replace(
+                    "%ProcessedBytes%",
+                    bytesProcessed.ToLocalizedString());
         }
     }
 }
