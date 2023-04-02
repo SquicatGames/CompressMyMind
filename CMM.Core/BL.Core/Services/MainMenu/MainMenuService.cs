@@ -33,7 +33,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
                 Console.Clear();
 
             var mainMenuData = GetMainMenuStringBySettings(_userSettingService.GetCurrentSettings());
-            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(_userSettingService.GetCurrentSettings());
+            var mainMenuInputPrefix = UIHelper.GetMainMenuInputPrefixBySettings(_userSettingService.GetCurrentSettings());
 
             //Отображение главного меню программы
             Console.WriteLine(mainMenuData);
@@ -113,20 +113,6 @@ namespace CMM.Core.BL.Core.Services.MainMenu
         }
 
         /// <summary>
-        /// Сформировать представление префикса ввода данных на основании настроек пользователя
-        /// </summary>
-        /// <param name="settings">Текущие настройки пользователя (использует свойство Language)</param>
-        /// <returns></returns>
-        private static string GetMainMenuInputPrefixBySettings(UserSettingsModel settings)
-        {
-            Type uIConstantType = AssemblyHelper.GetTypeByNameAndSettings(
-                "UIConstants",
-                settings);
-
-            return uIConstantType.GetConstString("MainMenuInputPrefix");
-        }
-
-        /// <summary>
         /// Отпределить опцию меню по введенной пользователем строке
         /// </summary>
         /// <param name="input">Данные, введенные пользователем</param>
@@ -166,7 +152,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
                         _userSettingService.GetCurrentSettings(),
                         "MainMenuOptionDescriptions"));
 
-            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(
+            var mainMenuInputPrefix = UIHelper.GetMainMenuInputPrefixBySettings(
                 _userSettingService
                     .GetCurrentSettings());
 
@@ -225,7 +211,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
                         _userSettingService.GetCurrentSettings(),
                         "MainMenuOptionDescriptions"));
 
-            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(
+            var mainMenuInputPrefix = UIHelper.GetMainMenuInputPrefixBySettings(
                 _userSettingService
                     .GetCurrentSettings());
 
@@ -318,7 +304,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
                         _userSettingService.GetCurrentSettings(),
                         "MainMenuOptionDescriptions"));
 
-            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(
+            var mainMenuInputPrefix = UIHelper.GetMainMenuInputPrefixBySettings(
                 _userSettingService
                     .GetCurrentSettings());
 
@@ -427,7 +413,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
 
             Console.WriteLine($"{currentValuePrefix}{currentValueSuffix}");
 
-            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(
+            var mainMenuInputPrefix = UIHelper.GetMainMenuInputPrefixBySettings(
                 _userSettingService
                     .GetCurrentSettings());
 
@@ -508,7 +494,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
 
             Console.WriteLine($"{currentValuePrefix}{currentValueSuffix}");
 
-            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(
+            var mainMenuInputPrefix = UIHelper.GetMainMenuInputPrefixBySettings(
                 _userSettingService
                     .GetCurrentSettings());
 
@@ -572,7 +558,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
 
             Console.WriteLine($"{currentValuePrefix}{currentSettings.ProgressBarDelay}");
 
-            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(
+            var mainMenuInputPrefix = UIHelper.GetMainMenuInputPrefixBySettings(
                 _userSettingService
                     .GetCurrentSettings());
 

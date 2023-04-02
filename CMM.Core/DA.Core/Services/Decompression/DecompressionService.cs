@@ -1,4 +1,5 @@
-﻿using CMM.Core.BL.Core.Models.Settings;
+﻿using CMM.Core.BL.Core.Helpers;
+using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.DA.Core.Common;
 using CMM.Core.SL.Core.Extensions.Enum;
 
@@ -76,11 +77,15 @@ namespace CMM.Core.DA.Core.Services.Decompression
                             outputFileStream.Close();
                             inputFileStream.Close();
                         }
+                        UIHelper.ProcessDecompressionSuccessMessage(settings);
                         return true;
                     }
                     else
                     {
-                        //отобразить ошибку
+                        UIHelper.ProcessDecompressionErrorMessage(
+                            "Unknown file format",
+                            settings);
+
                         inputFileStream.Close();
                         return false;
                     }
@@ -88,7 +93,9 @@ namespace CMM.Core.DA.Core.Services.Decompression
             }
             catch(Exception ex) 
             {
-                //отобразить ошибку
+                UIHelper.ProcessDecompressionErrorMessage(
+                            ex.Message,
+                            settings);
                 return false;
             }
         }

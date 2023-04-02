@@ -11,5 +11,11 @@
         public const string Copyright = "MIT лицензия Стефанов Антон (SquiCat)";
 
         public const string MainMenuInputPrefix = "->";
+
+        public const string CompressionSuccessMessage = "Сжатие файла успешно завершено \nНажмите Enter чтобы вернуться в главное меню";
+        public const string CompressionErrorMessagePattern = "При сжатии файла возникла ошибка:\n%Message%\nНажмите Enter чтобы вернуться в главное меню";
+
+        public const string DecompressionSuccessMessage = "Распаковка файла успешно завершена \nНажмите Enter чтобы вернуться в главное меню";
+        public const string DecompressionErrorMessagePattern = "При распаковке файла возникла ошибка:\n%Message%\nНажмите Enter чтобы вернуться в главное меню";
     }
 }

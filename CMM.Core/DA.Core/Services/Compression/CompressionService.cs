@@ -1,4 +1,5 @@
-﻿using CMM.Core.BL.Core.Models.Settings;
+﻿using CMM.Core.BL.Core.Helpers;
+using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.DA.Core.Common;
 
 namespace CMM.Core.DA.Core.Services.Compression
@@ -204,12 +205,15 @@ namespace CMM.Core.DA.Core.Services.Compression
                     }
 
                     inputFileStream.Close();
+                    UIHelper.ProcessCompressionSuccessMessage(settings);
                     return true;
                 }
             }
             catch(Exception ex)
             {
-                //отобразить ошибку
+                UIHelper.ProcessCompressionErrorMessage(
+                            ex.Message,
+                            settings);
                 return false;
             }
         }
@@ -220,7 +224,9 @@ namespace CMM.Core.DA.Core.Services.Compression
         {
             if(!File.Exists(fileName))
             {
-                //отобразить ошибку
+                UIHelper.ProcessCompressionErrorMessage(
+                            "File does not exist",
+                            settings);
                 return false;
             }
 
@@ -236,7 +242,9 @@ namespace CMM.Core.DA.Core.Services.Compression
             }
             catch(Exception ex)
             {
-                //отобразить ошибку
+                UIHelper.ProcessCompressionErrorMessage(
+                            ex.Message,
+                            settings);
                 return false;
             }
         }

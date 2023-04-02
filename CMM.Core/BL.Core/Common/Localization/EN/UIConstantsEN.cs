@@ -11,5 +11,11 @@
         public const string Copyright = "MIT Stefanov Anton (SquiCat)";
 
         public const string MainMenuInputPrefix = "->";
+
+        public const string CompressionSuccessMessage = "File compression is successfully done! \nPress Enter to go back to Main menu";
+        public const string CompressionErrorMessagePattern = "An error occured while compressing file:\n%Message%\nPress Enter to go back to Main menu";
+
+        public const string DecompressionSuccessMessage = "File decompression is successfully done! \nPress Enter to go back to Main menu";
+        public const string DecompressionErrorMessagePattern = "An error occured while decompressing file:\n%Message%\nPress Enter to go back to Main menu";
     }
 }
