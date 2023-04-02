@@ -1,6 +1,5 @@
 ﻿using CMM.Core.BL.Core.Common.Menu;
 using CMM.Core.BL.Core.Common.Settings;
-using System.Security.Cryptography;
 
 namespace CMM.Core.BL.Core.Services.MainMenu
 {

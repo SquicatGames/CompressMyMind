@@ -1,6 +1,4 @@
 ﻿using CMM.Core.BL.Core.Common;
-using CMM.Core.BL.Core.Common.Localization.EN;
-using CMM.Core.BL.Core.Common.Localization.RU;
 using CMM.Core.BL.Core.Common.Menu;
 using CMM.Core.BL.Core.Common.Settings;
 using CMM.Core.BL.Core.Helpers;
@@ -10,8 +8,6 @@ using CMM.Core.SL.Core.Extensions.BoolExt;
 using CMM.Core.SL.Core.Extensions.Enum;
 using CMM.Core.SL.Core.Extensions.TypeExt;
 using CMM.Core.SL.Core.Helpers;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace CMM.Core.BL.Core.Services.MainMenu
 {
@@ -183,15 +179,15 @@ namespace CMM.Core.BL.Core.Services.MainMenu
             bool anyValidFilePathTyped = false;
             string sourceFileName = string.Empty;
 
-            while(!anyValidFilePathTyped)
+            while (!anyValidFilePathTyped)
             {
                 Console.Write(mainMenuInputPrefix);
-                if(TryGetFileByPath(
+                if (TryGetFileByPath(
                     Console.ReadLine(),
                     out string fileName))
                 {
                     anyValidFilePathTyped = true;
-                    sourceFileName =fileName;
+                    sourceFileName = fileName;
                 }
                 else
                 {
@@ -199,7 +195,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
                 }
             }
 
-            if(sourceFileName == null)
+            if (sourceFileName == null)
             {
                 await ShowMainMenuAsync();
             }
