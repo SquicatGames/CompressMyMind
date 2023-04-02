@@ -356,7 +356,7 @@ namespace CMM.Core.DA.Core.Services.Compression
                                 bytesByFrequency[i],
                                 new CompressionAtom
                                 {
-                                    Code = 15 << 8 + i,
+                                    Code = (15 << 8) + i,
                                     CodeLen = 12
                                 });
                         }

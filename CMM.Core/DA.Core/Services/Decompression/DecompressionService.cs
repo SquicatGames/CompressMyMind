@@ -1,8 +1,10 @@
 ﻿using CMM.Core.BL.Core.Helpers;
 using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.DA.Core.Common;
+using CMM.Core.DA.Core.Common.Helpers;
 using CMM.Core.SL.Core.Extensions.Enum;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace CMM.Core.DA.Core.Services.Decompression
 {
@@ -39,7 +41,7 @@ namespace CMM.Core.DA.Core.Services.Decompression
                             {
                                 case CompressionMethods.DC4:
                                     {
-                                        ProcessDecompressionMethodNone(
+                                        ProcessDecompressionMethodHC1(
                                         inputFileStream,
                                         outputFileStream,
                                         settings);
@@ -48,7 +50,7 @@ namespace CMM.Core.DA.Core.Services.Decompression
 
                                 case CompressionMethods.HC1:
                                     {
-                                        ProcessDecompressionMethodNone(
+                                        ProcessDecompressionMethodHC1(
                                         inputFileStream,
                                         outputFileStream,
                                         settings);
@@ -57,7 +59,7 @@ namespace CMM.Core.DA.Core.Services.Decompression
 
                                 case CompressionMethods.RC:
                                     {
-                                        ProcessDecompressionMethodNone(
+                                        ProcessDecompressionMethodHC1(
                                         inputFileStream,
                                         outputFileStream,
                                         settings);
@@ -151,6 +153,125 @@ namespace CMM.Core.DA.Core.Services.Decompression
 
                         sw.Reset();
                         sw.Start();
+                    }
+                }
+            }
+        }
+
+        private void ProcessDecompressionMethodHC1(
+            FileStream inStream,
+            FileStream outStream,
+            UserSettingsModel settings)
+        {
+            int bytesRead = 1;
+            long bytesProcessed = 1;
+
+            Dictionary<byte, CompressionAtom> charsetInfo = new();
+            Dictionary<CompressionAtom, byte> decompressionInfo = new();
+
+            byte cILengthLowPart = (byte)inStream.ReadByte();
+            byte cILengthHighPart = (byte)inStream.ReadByte();
+
+            int cILength = cILengthLowPart +
+                cILengthHighPart * 256;
+
+            byte[] rawCharsetInfo = new byte[cILength];
+
+            bytesRead = inStream
+                .Read(
+                    rawCharsetInfo, 
+                    0, 
+                    cILength);
+
+            bytesProcessed += bytesRead;
+
+            if(bytesRead == cILength)
+            {
+                charsetInfo = JsonSerializer
+                    .Deserialize<Dictionary<byte, CompressionAtom>>(
+                        new string(rawCharsetInfo
+                            .Select(b => (char)b)
+                            .ToArray())) 
+                    ?? new Dictionary<byte, CompressionAtom>();
+
+                int index = 0;
+
+                Dictionary<byte, CompressionAtom> restoredCharsetInfo = new();
+                foreach(var pair in charsetInfo)
+                {
+                    if (index < 15)
+                    {
+                        restoredCharsetInfo.Add(
+                            pair.Key,
+                            new CompressionAtom
+                            {
+                                Code = index,
+                                CodeLen = 4
+                            });
+                    }
+                    else
+                    {
+                        restoredCharsetInfo.Add(
+                            pair.Key,
+                            new CompressionAtom
+                            {
+                                Code = (15 << 8) + index,
+                                CodeLen = 12
+                            });
+                    }
+                    index++;
+                }
+
+                decompressionInfo = CompressionAtomHelper
+                    .ReflectByteMap(restoredCharsetInfo);
+
+                //process file data
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
+                while (bytesRead != 0)
+                {
+                    byte bytesToProcessLowPart = (byte)inStream.ReadByte();
+                    byte bytesToProcessHighPart = (byte)inStream.ReadByte();
+
+                    int bytesToProcess = bytesToProcessLowPart
+                        + bytesToProcessHighPart * 256;
+
+                    bytesToProcess -= 2;
+
+                    byte[] buffer = new byte[bytesToProcess];
+
+                    bytesRead = inStream.Read(
+                        buffer,
+                        0,
+                        bytesToProcess);
+
+                    bytesProcessed += bytesRead;
+
+                    if(bytesRead != bytesToProcess)
+                    {
+                        break;
+                    }
+
+                    var atoms = CompressionAtomHelper
+                        .GetCompressionAtomsByBytes(buffer);
+
+                    foreach(var atom in atoms)
+                    {
+                        outStream.WriteByte(decompressionInfo[atom]);
+                    }
+
+                    if (settings.ShowProgress)
+                    {
+                        if (sw.ElapsedMilliseconds >= settings.ProgressBarDelay)
+                        {
+                            UIHelper.ProcessCurrentFileProcessingStateMessage(
+                                bytesProcessed,
+                                settings);
+
+                            sw.Reset();
+                            sw.Start();
+                        }
                     }
                 }
             }

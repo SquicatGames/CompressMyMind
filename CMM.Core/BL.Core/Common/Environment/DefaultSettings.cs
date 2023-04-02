@@ -19,7 +19,7 @@ namespace CMM.Core.BL.Core.Common.Environment
         {
             Language = Languages.Russian,
             ShowProgress = true,
-            ProgressBarDelay = 2000
+            ProgressBarDelay = 300
         };
     }
 }

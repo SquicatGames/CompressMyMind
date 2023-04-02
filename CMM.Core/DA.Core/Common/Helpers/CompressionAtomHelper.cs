@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -53,7 +54,53 @@ namespace CMM.Core.DA.Core.Common.Helpers
 
         public static IEnumerable<CompressionAtom> GetCompressionAtomsByBytes(IEnumerable<byte> bytes)
         {
-            return null;
+            var result = new List<CompressionAtom>();
+
+            var semibytes = QuantifyBytesBySemibytes(bytes)
+                .ToArray();
+
+            int index = 0;
+
+            while(index <  semibytes.Length)
+            {
+                if (semibytes[index]<15)
+                {
+                    result.Add(new CompressionAtom
+                    {
+                        Code = semibytes[index],
+                        CodeLen = 4
+                    });
+
+                    index++;
+                }
+                else
+                {
+                    index++;
+
+                    result.Add(new CompressionAtom
+                    {
+                        Code = (15 << 8) + semibytes[index] * 16 + semibytes[index + 1],
+                        CodeLen = 12
+                    });
+
+                    index += 2;
+                }
+            }
+
+            return result;
+        }
+
+        public static Dictionary<CompressionAtom, byte> ReflectByteMap(Dictionary<byte, CompressionAtom> map)
+        {
+            var result = new Dictionary<CompressionAtom, byte>();
+            foreach(var pair in map)
+            {
+                result.Add(
+                    pair.Value, 
+                    pair.Key);
+            }
+
+            return result;
         }
 
         private static byte GetByteByBits(IEnumerable<byte> bits)
@@ -67,9 +114,18 @@ namespace CMM.Core.DA.Core.Common.Helpers
             return result;
         }
 
-        private static IEnumerable<byte> GetBitsByByte(byte _byte)
+        private static IEnumerable<byte> QuantifyBytesBySemibytes(
+            IEnumerable<byte> source)
         {
-            return null;
+            var result = new List<byte>();
+
+            foreach(var _byte in source)
+            {
+                result.Add((byte)(_byte / 16));
+                result.Add((byte)(_byte % 16));
+            }
+
+            return result;
         }
     }
 }
