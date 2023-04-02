@@ -65,7 +65,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
             {
                 case MainMenuOptions.Compress: await ProcessMainMenuCompressOptionAsync(); return;
                 case MainMenuOptions.Decompress: await ProcessMainMenuDecompressOptionAsync(); return;
-                case MainMenuOptions.ChangeSettings: await ProcessMainMenuChangeSettingsOption(); return;
+                case MainMenuOptions.ChangeSettings: await ProcessMainMenuChangeSettingsOptionAsync(); return;
                 case MainMenuOptions.Quit: ProcessMainMenuQuitOption(); return;
                 default: ProcessMainMenuQuitOption(); return;
             }
@@ -75,9 +75,9 @@ namespace CMM.Core.BL.Core.Services.MainMenu
         {
             switch (option)
             {
-                case ChangeSettingsMenuOptions.Language: ProcessChangeSettingsMenuLanguageOption(); return;
-                case ChangeSettingsMenuOptions.ShowProgress: ProcessChangeSettingsMenuShowProgressOption(); return;
-                case ChangeSettingsMenuOptions.ProgressBarDelay: await ProcessChangeSettingsMenuProgressBarDelayOption(); return;
+                case ChangeSettingsMenuOptions.Language: await ProcessChangeSettingsMenuLanguageOptionAsync(); return;
+                case ChangeSettingsMenuOptions.ShowProgress: await ProcessChangeSettingsMenuShowProgressOptionAsync(); return;
+                case ChangeSettingsMenuOptions.ProgressBarDelay: await ProcessChangeSettingsMenuProgressBarDelayOptionAsync(); return;
                 default: await ShowMainMenuAsync(); return;
             }
         }
@@ -166,7 +166,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
 
         }
 
-        private async Task ProcessMainMenuChangeSettingsOption()
+        private async Task ProcessMainMenuChangeSettingsOptionAsync()
         {
             Console.Clear();
 
@@ -251,12 +251,82 @@ namespace CMM.Core.BL.Core.Services.MainMenu
             return false;
         }
 
-        private void ProcessChangeSettingsMenuLanguageOption()
+        private async Task ProcessChangeSettingsMenuLanguageOptionAsync()
         {
+            Console.Clear();
 
+            var currentSettings = _userSettingService.GetCurrentSettings();
+
+            Console.WriteLine(
+                ChangeSettingsMenuOptions.Language
+                    .GetLocalizedDescription(
+                        currentSettings,
+                        "UserSettingPropertyDescriptions"));
+
+            var changeSettingsMenuConstantsType = AssemblyHelper
+                .GetTypeByNameAndSettings(
+                    "ChangeSettingsMenuConstants",
+                    currentSettings);
+
+            Console.WriteLine(changeSettingsMenuConstantsType
+                .GetConstString("ChangeSettingsLanguageOptionTitle"));
+
+            foreach (Languages option in Enum.GetValues(typeof(Languages)))
+            {
+                var description = option.GetBaseDescription();
+
+                Console.WriteLine($"({(int)option}) {description}");
+            }
+
+            var currentValuePrefix = changeSettingsMenuConstantsType
+                .GetConstString("ChangeSettingsShowCurrentValueMessage");
+
+            var currentValueSuffix = currentSettings
+                .Language
+                .GetBaseDescription();
+
+            Console.WriteLine($"{currentValuePrefix}{currentValueSuffix}");
+
+            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(
+                _userSettingService
+                    .GetCurrentSettings());
+
+            bool anyValidLanguageValueSelected = false;
+            Languages newLanguageValue = default(Languages);
+
+            //Получить корректный ввод от пользователя программы
+            while (!anyValidLanguageValueSelected)
+            {
+                Console.Write(mainMenuInputPrefix);
+                if (TryGetLanguageValueFromString(
+                    Console.ReadLine(),
+                    out Languages value))
+                {
+                    anyValidLanguageValueSelected = true;
+                    newLanguageValue = value;
+                }
+            }
+
+            if ((int)newLanguageValue == 0)
+                await ProcessMainMenuChangeSettingsOptionAsync();
+            else
+            {
+                currentSettings.Language = newLanguageValue;
+
+                //Сохранение новых настроек
+                _userSettingService.SetCurrentSettings(currentSettings);
+
+                Console.WriteLine(changeSettingsMenuConstantsType
+                    .GetConstString("ChangeSettingsSuccessMessage"));
+
+                Console.Write(mainMenuInputPrefix);
+                Console.ReadLine();
+
+                await ProcessMainMenuChangeSettingsOptionAsync();
+            }
         }
 
-        private async Task ProcessChangeSettingsMenuShowProgressOption()
+        private async Task ProcessChangeSettingsMenuShowProgressOptionAsync()
         {
             Console.Clear();
 
@@ -319,7 +389,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
             }
 
             if ((int)newShowProgressFlagValue == 0)
-                await ProcessMainMenuChangeSettingsOption();
+                await ProcessMainMenuChangeSettingsOptionAsync();
             else
             {
                 currentSettings.ShowProgress = newShowProgressFlagValue.ToBool();
@@ -333,11 +403,11 @@ namespace CMM.Core.BL.Core.Services.MainMenu
                 Console.Write(mainMenuInputPrefix);
                 Console.ReadLine();
 
-                await ProcessMainMenuChangeSettingsOption();
+                await ProcessMainMenuChangeSettingsOptionAsync();
             }
         }
 
-        private async Task ProcessChangeSettingsMenuProgressBarDelayOption()
+        private async Task ProcessChangeSettingsMenuProgressBarDelayOptionAsync()
         {
             Console.Clear();
 
@@ -383,7 +453,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
             }
 
             if (newDelayValue == 0)
-                await ProcessMainMenuChangeSettingsOption();
+                await ProcessMainMenuChangeSettingsOptionAsync();
             else
             {
                 currentSettings.ProgressBarDelay = newDelayValue;
@@ -397,7 +467,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
                 Console.Write(mainMenuInputPrefix);
                 Console.ReadLine();
 
-                await ProcessMainMenuChangeSettingsOption();
+                await ProcessMainMenuChangeSettingsOptionAsync();
             }
         }
 
@@ -442,6 +512,31 @@ namespace CMM.Core.BL.Core.Services.MainMenu
                     return true;
 
                 if (flagValue.IsValid())
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool TryGetLanguageValueFromString(
+            string input,
+            out Languages language)
+        {
+            language = default(Languages);
+
+            string normalizedInput = input.Replace(" ", "");
+
+            if (!UIHelper.ValidateInput(normalizedInput))
+                return false;
+
+            if (ChangeSettingsMenuOptions.TryParse(
+                normalizedInput,
+                out language))
+            {
+                if ((int)language == 0)
+                    return true;
+
+                if (language.IsValid())
                     return true;
             }
 

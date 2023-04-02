@@ -11,8 +11,8 @@ namespace CMM.Core.BL.Core.Common.Localization.RU
     /// </summary>
     internal static class ChangeSettingsMenuConstantsRU
     {
-        public const string ChangeSettingsLanguageOptionTitle = "Выберете язык из списка, введя соответствующее значение:";
-        public const string ChangeSettingsShowProgressOptionTitle = "Выберете состояние флага \"Отображать строку состояния\", введя соответствующее значение:";
+        public const string ChangeSettingsLanguageOptionTitle = "Выберете язык из списка, введя соответствующее значение, или введите 0 для возврата в меню настроек:";
+        public const string ChangeSettingsShowProgressOptionTitle = "Выберете состояние флага \"Отображать строку состояния\", введя соответствующее значение, или введите 0 для возврата в меню настроек:";
         public const string ChangeSettingsProgressBarDelayOptionTitle = "Укажите новое значение задержки при отображении строки состояния, или введите 0 для возврата в меню настроек:";
 
         public const string ChangeSettingsShowCurrentValueMessage = "Текущее значение: ";
