@@ -329,13 +329,16 @@ namespace CMM.Core.DA.Core.Services.Compression
                         }
                     }
 
-                    byte[] bytesByFrequency = frequencyMap
+                    List<byte> bytesByFrequency = frequencyMap
                         .OrderByDescending(pair => pair.Value)
                         .Select(pair => pair.Key)
-                        .ToArray();
+                        .ToList();
 
+                    for (int i = 0; i < 256; i++)
+                        if (!frequencyMap.ContainsKey((byte)i))
+                            bytesByFrequency.Add((byte)i);
 
-                    for (int i = 0; i < bytesByFrequency.Length; i++)
+                    for (int i = 0; i < bytesByFrequency.Count(); i++)
                     {
                         if (i < 15)
                         {
