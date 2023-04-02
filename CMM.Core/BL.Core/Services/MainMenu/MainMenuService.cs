@@ -158,12 +158,142 @@ namespace CMM.Core.BL.Core.Services.MainMenu
 
         private async Task ProcessMainMenuCompressOptionAsync()
         {
+            Console.Clear();
 
+            //Сформировать текст сообщения при выборе пункта меню "Указать файл для сжатия"
+            //на основании настроек пользователя
+            Console.WriteLine(
+                MainMenuOptions.Compress
+                    .GetLocalizedDescription(
+                        _userSettingService.GetCurrentSettings(),
+                        "MainMenuOptionDescriptions"));
+
+            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(
+                _userSettingService
+                    .GetCurrentSettings());
+
+            var compressMenuConstantsType = AssemblyHelper
+                .GetTypeByNameAndSettings(
+                    "CompressMenuConstants",
+                    _userSettingService.GetCurrentSettings());
+
+            var fileNotFoundMessage = compressMenuConstantsType
+                .GetConstString("FileNotFoundMessage");
+
+            bool anyValidFilePathTyped = false;
+            string sourceFileName = string.Empty;
+
+            while(!anyValidFilePathTyped)
+            {
+                Console.Write(mainMenuInputPrefix);
+                if(TryGetFileByPath(
+                    Console.ReadLine(),
+                    out string fileName))
+                {
+                    anyValidFilePathTyped = true;
+                    sourceFileName =fileName;
+                }
+                else
+                {
+                    Console.WriteLine(fileNotFoundMessage);
+                }
+            }
+
+            if(sourceFileName == null)
+            {
+                await ShowMainMenuAsync();
+            }
+            else
+            {
+                //Call base compression method
+            }
         }
 
         private async Task ProcessMainMenuDecompressOptionAsync()
         {
+            Console.Clear();
 
+            //Сформировать текст сообщения при выборе пункта меню "Указать файл для распаковки"
+            //на основании настроек пользователя
+            Console.WriteLine(
+                MainMenuOptions.Decompress
+                    .GetLocalizedDescription(
+                        _userSettingService.GetCurrentSettings(),
+                        "MainMenuOptionDescriptions"));
+
+            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(
+                _userSettingService
+                    .GetCurrentSettings());
+
+            var compressMenuConstantsType = AssemblyHelper
+                .GetTypeByNameAndSettings(
+                    "CompressMenuConstants",
+                    _userSettingService.GetCurrentSettings());
+
+            var fileNotFoundMessage = compressMenuConstantsType
+                .GetConstString("FileNotFoundMessage");
+
+            bool anyValidFilePathTyped = false;
+            string sourceFileName = string.Empty;
+
+            while (!anyValidFilePathTyped)
+            {
+                Console.Write(mainMenuInputPrefix);
+                if (TryGetFileByPath(
+                    Console.ReadLine(),
+                    out string fileName))
+                {
+                    anyValidFilePathTyped = true;
+                    sourceFileName = fileName;
+                }
+                else
+                {
+                    Console.WriteLine(fileNotFoundMessage);
+                }
+            }
+
+            if (sourceFileName == null)
+            {
+                await ShowMainMenuAsync();
+            }
+            else
+            {
+                //Call base decompression method
+            }
+        }
+
+        private bool TryGetFileByPath(
+            string filePath, 
+            out string fileName)
+        {
+            if (filePath.Replace(" ", "") == 0.ToString())
+            {
+                fileName = null;
+                return true;
+            }
+
+            fileName = filePath;
+
+            if (File.Exists(filePath))
+                return true;
+
+            string normalizedFilePath = filePath.Normalize();
+
+            if(File.Exists(normalizedFilePath))
+            {
+                fileName = normalizedFilePath;
+                return true;
+            }
+
+            normalizedFilePath = normalizedFilePath.Replace(" ", "");
+
+            if(File.Exists(normalizedFilePath))
+            {
+                fileName = normalizedFilePath;
+                return true;
+            }
+
+            return false;
         }
 
         private async Task ProcessMainMenuChangeSettingsOptionAsync()
@@ -218,7 +348,7 @@ namespace CMM.Core.BL.Core.Services.MainMenu
             //Выполнить действия в соответствие с выбором пользователя
             if ((int)selectedOption == 0)
             {
-                ShowMainMenuAsync();
+                await ShowMainMenuAsync();
             }
             else
             {
