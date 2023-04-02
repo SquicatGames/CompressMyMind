@@ -1,9 +1,12 @@
-﻿using CMM.Core.BL.Core.Common.Localization.RU;
+﻿using CMM.Core.BL.Core.Common;
+using CMM.Core.BL.Core.Common.Localization.EN;
+using CMM.Core.BL.Core.Common.Localization.RU;
 using CMM.Core.BL.Core.Common.Menu;
 using CMM.Core.BL.Core.Common.Settings;
 using CMM.Core.BL.Core.Helpers;
 using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.BL.Core.Services.UserSettings;
+using CMM.Core.SL.Core.Extensions.BoolExt;
 using CMM.Core.SL.Core.Extensions.Enum;
 using CMM.Core.SL.Core.Extensions.TypeExt;
 using CMM.Core.SL.Core.Helpers;
@@ -253,9 +256,85 @@ namespace CMM.Core.BL.Core.Services.MainMenu
 
         }
 
-        private void ProcessChangeSettingsMenuShowProgressOption()
+        private async Task ProcessChangeSettingsMenuShowProgressOption()
         {
+            Console.Clear();
 
+            var currentSettings = _userSettingService.GetCurrentSettings();
+
+            Console.WriteLine(
+                ChangeSettingsMenuOptions.ShowProgress
+                    .GetLocalizedDescription(
+                        currentSettings,
+                        "UserSettingPropertyDescriptions"));
+
+            var changeSettingsMenuConstantsType = AssemblyHelper
+                .GetTypeByNameAndSettings(
+                    "ChangeSettingsMenuConstants",
+                    currentSettings);
+
+            Console.WriteLine(changeSettingsMenuConstantsType
+                .GetConstString("ChangeSettingsShowProgressOptionTitle"));
+
+            foreach (BoolValues option in Enum.GetValues(typeof(BoolValues)))
+            {
+                var description = option.GetLocalizedDescription(
+                    _userSettingService
+                        .GetCurrentSettings(),
+                    "FlagValueDescriptions");
+
+                Console.WriteLine($"({(int)option}) {description}");
+            }
+
+            var currentValuePrefix = changeSettingsMenuConstantsType
+                .GetConstString("ChangeSettingsShowCurrentValueMessage");
+
+            var currentValueSuffix = currentSettings
+                .ShowProgress
+                .ToBoolValues()
+                .GetLocalizedDescription(
+                currentSettings,
+                "FlagValueDescriptions");
+
+            Console.WriteLine($"{currentValuePrefix}{currentValueSuffix}");
+
+            var mainMenuInputPrefix = GetMainMenuInputPrefixBySettings(
+                _userSettingService
+                    .GetCurrentSettings());
+
+            bool anyValidShowProgressFlagValueSelected = false;
+            BoolValues newShowProgressFlagValue = default(BoolValues);
+
+            //Получить корректный ввод от пользователя программы
+            while (!anyValidShowProgressFlagValueSelected)
+            {
+                Console.Write(mainMenuInputPrefix);
+                if (TryGetShowProgressFlagValueFromString(
+                    Console.ReadLine(),
+                    out BoolValues flagValue))
+                {
+                    anyValidShowProgressFlagValueSelected = true;
+                    newShowProgressFlagValue = flagValue;
+                }
+            }
+
+            if ((int)newShowProgressFlagValue == 0)
+                await ProcessMainMenuChangeSettingsOption();
+            else
+            {
+                currentSettings.ShowProgress = newShowProgressFlagValue.ToBool();
+
+                //Сохранение новых настроек
+                _userSettingService.SetCurrentSettings(currentSettings);
+
+                Console.WriteLine(changeSettingsMenuConstantsType
+                    .GetConstString("ChangeSettingsSuccessMessage"));
+
+                Console.Write(mainMenuInputPrefix);
+                Console.ReadLine();
+
+                await ProcessMainMenuChangeSettingsOption();
+            }
         }
 
         private async Task ProcessChangeSettingsMenuProgressBarDelayOption()
@@ -339,6 +418,31 @@ namespace CMM.Core.BL.Core.Services.MainMenu
             {
                 delayValue = value;
                 return true;
+            }
+
+            return false;
+        }
+
+        private bool TryGetShowProgressFlagValueFromString(
+            string input,
+            out BoolValues flagValue)
+        {
+            flagValue = default(BoolValues);
+
+            string normalizedInput = input.Replace(" ", "");
+
+            if (!UIHelper.ValidateInput(normalizedInput))
+                return false;
+
+            if (BoolValues.TryParse(
+                normalizedInput,
+                out flagValue))
+            {
+                if ((int)flagValue == 0)
+                    return true;
+
+                if (flagValue.IsValid())
+                    return true;
             }
 
             return false;
