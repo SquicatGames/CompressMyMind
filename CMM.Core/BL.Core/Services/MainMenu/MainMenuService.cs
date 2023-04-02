@@ -4,6 +4,8 @@ using CMM.Core.BL.Core.Common.Settings;
 using CMM.Core.BL.Core.Helpers;
 using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.BL.Core.Services.UserSettings;
+using CMM.Core.DA.Core.Services.Compression;
+using CMM.Core.DA.Core.Services.Decompression;
 using CMM.Core.SL.Core.Extensions.BoolExt;
 using CMM.Core.SL.Core.Extensions.Enum;
 using CMM.Core.SL.Core.Extensions.TypeExt;
@@ -201,7 +203,11 @@ namespace CMM.Core.BL.Core.Services.MainMenu
             }
             else
             {
-                //Call base compression method
+                var compressionService = new CompressionService();
+
+                await compressionService.TryCompressFileAsync(
+                    sourceFileName,
+                    _userSettingService.GetCurrentSettings());
             }
         }
 
@@ -254,7 +260,11 @@ namespace CMM.Core.BL.Core.Services.MainMenu
             }
             else
             {
-                //Call base decompression method
+                var decompressionService = new DecompressionService();
+
+                await decompressionService.TryDecompressFileAsync(
+                    sourceFileName,
+                    _userSettingService.GetCurrentSettings());
             }
         }
 
