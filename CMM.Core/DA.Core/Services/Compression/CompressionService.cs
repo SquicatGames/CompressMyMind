@@ -1,7 +1,10 @@
 ﻿using CMM.Core.BL.Core.Helpers;
 using CMM.Core.BL.Core.Models.Settings;
 using CMM.Core.DA.Core.Common;
+using CMM.Core.DA.Core.Common.Helpers;
+using System.Data.Common;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace CMM.Core.DA.Core.Services.Compression
 {
@@ -167,7 +170,7 @@ namespace CMM.Core.DA.Core.Services.Compression
                         {
                             case CompressionMethods.DC4:
                                 {
-                                    ProcessCompressionMethodNone(
+                                    ProcessCompressionMethodHC1(
                                         inputFileStream,
                                         outputFileStream,
                                         settings);
@@ -175,7 +178,7 @@ namespace CMM.Core.DA.Core.Services.Compression
 
                             case CompressionMethods.HC1:
                                 {
-                                    ProcessCompressionMethodNone(
+                                    ProcessCompressionMethodHC1(
                                         inputFileStream,
                                         outputFileStream,
                                         settings);
@@ -184,7 +187,7 @@ namespace CMM.Core.DA.Core.Services.Compression
 
                             case CompressionMethods.RC:
                                 {
-                                    ProcessCompressionMethodNone(
+                                    ProcessCompressionMethodHC1(
                                         inputFileStream,
                                         outputFileStream,
                                         settings);
@@ -270,6 +273,125 @@ namespace CMM.Core.DA.Core.Services.Compression
                     bytes.Length);
 
                 outStream.Write(bytes, 0, bytesRead);
+
+                bytesProcessed += bytesRead;
+
+                if (settings.ShowProgress)
+                {
+                    if (sw.ElapsedMilliseconds >= settings.ProgressBarDelay)
+                    {
+                        UIHelper.ProcessCurrentFileProcessingStateMessage(
+                            bytesProcessed,
+                            settings);
+
+                        sw.Reset();
+                        sw.Start();
+                    }
+                }
+            }
+        }
+
+        private void ProcessCompressionMethodHC1(
+            FileStream inStream,
+            FileStream outStream,
+            UserSettingsModel settings)
+        {
+            int bytesRead = 1;
+            long bytesProcessed = 1;
+
+            bool isCharsetInfoProcessed = false;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            Dictionary<byte, CompressionAtom> charsetInfo = new();
+
+            while (bytesRead > 0)
+            {
+                byte[] bytes = new byte[CompressionConstants.BufferSize];
+                bytesRead = inStream.Read(
+                    bytes,
+                    0,
+                    bytes.Length);
+
+                if(!isCharsetInfoProcessed)
+                {
+                    Dictionary<byte, int> frequencyMap = new();
+                    for (int i = 0; i < bytesRead; i++)
+                    {
+                        if (frequencyMap.TryGetValue(bytes[i], out int count))
+                        {
+                            frequencyMap[bytes[i]] = count + 1;
+                        }
+                        else
+                        {
+                            frequencyMap.Add(bytes[i], 1);
+                        }
+                    }
+
+                    byte[] bytesByFrequency = frequencyMap
+                        .OrderByDescending(pair => pair.Value)
+                        .Select(pair => pair.Key)
+                        .ToArray();
+
+
+                    for (int i = 0; i < bytesByFrequency.Length; i++)
+                    {
+                        if (i < 15)
+                        {
+                            charsetInfo.Add(
+                                bytesByFrequency[i],
+                                new CompressionAtom
+                                {
+                                    Code = i,
+                                    CodeLen = 4
+                                });
+                        }
+                        else
+                        {
+                            charsetInfo.Add(
+                                bytesByFrequency[i],
+                                new CompressionAtom
+                                {
+                                    Code = 15 << 8 + i,
+                                    CodeLen = 12
+                                });
+                        }
+                    }
+
+                    string serializedCharsetInfo = JsonSerializer.Serialize(charsetInfo);
+
+                    outStream.WriteByte(
+                        (byte)(serializedCharsetInfo.Length % 256));
+
+                    outStream.WriteByte(
+                        (byte)(serializedCharsetInfo.Length / 256));
+
+                    outStream.Write(
+                        serializedCharsetInfo
+                            .Select(c=>(byte)c)
+                            .ToArray(), 
+                        0, 
+                        serializedCharsetInfo.Length);
+
+                    isCharsetInfoProcessed = true;
+                }
+
+                List<CompressionAtom> compressedData = new();
+
+                for (int i = 0; i < bytesRead; i++)
+                {
+                    compressedData.Add(charsetInfo[bytes[i]]);
+                }
+
+                byte[] bytesToOutput = CompressionAtomHelper
+                    .GetBytesByCompressionAtoms(compressedData)
+                    .ToArray();
+
+                outStream.Write(
+                    bytesToOutput,
+                    0,
+                    bytesToOutput.Length);
 
                 bytesProcessed += bytesRead;
 
